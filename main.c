@@ -42,6 +42,12 @@
 */
 
 #include "mcc_generated_files/mcc.h"
+
+#define ENTRANCE PORTAbits.RA0
+#define EXIT PORTAbits.RA1
+#define CAR_FULL 10
+#define CAR_FULL_LIGHT LATBbits.LB7
+
 void Initial(void);
 void delay_1s(void);
 /*
@@ -49,6 +55,7 @@ void delay_1s(void);
  */
 void main(void)
 {
+    unsigned char num = 0;
     // Initialize the device
     SYSTEM_Initialize();
     Initial();
@@ -70,11 +77,27 @@ void main(void)
 
     while (1)
     {
-        // Add your application code
-        LATB = 0x55;
-        delay_1s();
-        LATB=0xAA;
-        delay_1s();
+        while (!ENTRANCE && !EXIT);
+       
+        if(ENTRANCE)
+        {
+            if(num != 31)
+                num++;
+            if(num > CAR_FULL)
+                CAR_FULL_LIGHT=1;
+        }
+        else
+        {
+            if(num != 0)
+                num--;
+            if(num <= CAR_FULL)
+                CAR_FULL_LIGHT=0;              
+        }
+        
+        while (ENTRANCE || EXIT );
+        
+        LATB = LATB & 0x80;
+        LATB = LATB | num;
     }
 }
 
