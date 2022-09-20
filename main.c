@@ -8,7 +8,7 @@
     main.c
 
   Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+    Created by Tommy Gartlan
 
   Description:
     This header file provides implementations for driver APIs for all modules selected in the GUI.
@@ -48,14 +48,20 @@
 #define CAR_FULL 10
 #define CAR_FULL_LIGHT LATBbits.LB7
 
+#define decrease_cars()  do { if(num != 0) num--; if(num <= CAR_FULL) CAR_FULL_LIGHT=0;} while(0)
+
 void Initial(void);
 void delay_1s(void);
+void increase_cars(void);
+
+//Global variables
+unsigned char num = 0;
 /*
                          Main application
  */
 void main(void)
 {
-    unsigned char num = 0;
+    
     // Initialize the device
     SYSTEM_Initialize();
     Initial();
@@ -81,17 +87,11 @@ void main(void)
        
         if(ENTRANCE)
         {
-            if(num != 31)
-                num++;
-            if(num > CAR_FULL)
-                CAR_FULL_LIGHT=1;
+            increase_cars();
         }
         else
         {
-            if(num != 0)
-                num--;
-            if(num <= CAR_FULL)
-                CAR_FULL_LIGHT=0;              
+            decrease_cars();        
         }
         
         while (ENTRANCE || EXIT );
@@ -125,6 +125,13 @@ void delay_1s(void)
     
 }
 
+void increase_cars(void)
+{
+    if(num != 31)
+                num++;
+            if(num > CAR_FULL)
+                CAR_FULL_LIGHT=1;
+}
 /**
  End of File
 */
